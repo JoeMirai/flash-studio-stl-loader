@@ -18,6 +18,7 @@ from gi.repository import Gio, GLib, Gtk
 
 PREFIX = 'com.flashforge.orca-flashforge.InstanceCheck.Object'
 CACHE = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache')) / 'flash-studio-loader'
+PREVIEW_TRIANGLE_LIMIT = 100_000
 
 
 def downloads_folder():
@@ -77,7 +78,7 @@ def extract_stls(archive, cache=CACHE):
     return paths
 
 
-def read_mesh(path, limit=12000):
+def read_mesh(path, limit=PREVIEW_TRIANGLE_LIMIT):
     """Read binary or ASCII STL and sample large meshes for a responsive preview."""
     size = path.stat().st_size
     if size > 256 * 1024 ** 2:

@@ -49,7 +49,7 @@ The direct-import option requires exactly one running instance.
 
 Tested with Flash Studio Desktop 1.7.8 on a Wayland desktop where Flash Studio runs through XWayland. D-Bus is used only to find the application and its process ID. This Flash Studio build advertises an invalid D-Bus interface name containing a hyphen; standard clients and the session broker reject imports through that interface. Import therefore uses the app's native Xdnd file-drop receiver instead. It waits for the application to request the URI list and acknowledge the drop.
 
-This depends on Flash Studio retaining its current D-Bus instance name prefix and Xdnd support. Pure Wayland applications without an XWayland window are not supported. Preview dimensions assume millimetres, as STL does not encode units. Large previews are sampled (12,000 triangles), and files over 256 MB can be imported but are not previewed. ZIP extraction is limited to 1 GB / 1,000 STLs and rejects unsafe paths.
+This depends on Flash Studio retaining its current D-Bus instance name prefix and Xdnd support. Pure Wayland applications without an XWayland window are not supported. Preview dimensions assume millimetres, as STL does not encode units. Large previews are sampled (100,000 triangles), and files over 256 MB can be imported but are not previewed. ZIP extraction is limited to 1 GB / 1,000 STLs and rejects unsafe paths.
 
 ## Tests
 
