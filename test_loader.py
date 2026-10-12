@@ -4,7 +4,7 @@ import struct
 import tempfile
 import unittest
 import zipfile
-from loader import extract_stls, latest_zip, read_mesh, recent_stls
+from loader import DEFAULT_SETTINGS, extract_stls, latest_zip, load_settings, read_mesh, recent_stls, save_settings
 
 ASCII = b'''solid test
 facet normal 0 0 1
@@ -38,6 +38,24 @@ class LoaderTests(unittest.TestCase):
         path.write_bytes(ASCII.replace(b'vertex 10', b'vertex nan'))
         with self.assertRaises(ValueError):
             read_mesh(path)
+
+    def test_preview_polygon_limit_and_saved_settings(self):
+        path = self.folder / 'many.stl'
+        triangle = struct.pack('<12fH', 0, 0, 1, 0, 0, 0, 10, 0, 0, 0, 20, 0, 0)
+        path.write_bytes(b'preview'.ljust(80, b'\0') + struct.pack('<I', 6) + triangle * 6)
+        self.assertEqual(len(read_mesh(path, limit=3)[0]), 3)
+        self.assertEqual(len(read_mesh(path, limit=6)[0]), 6)
+
+        settings_path = self.folder / 'config' / 'settings.json'
+        self.assertEqual(load_settings(settings_path), DEFAULT_SETTINGS)
+        chosen = {**DEFAULT_SETTINGS, 'resolution': '2', 'polygons': '250000',
+                  'view': 'top', 'style': 'wireframe'}
+        save_settings(chosen, settings_path)
+        self.assertEqual(load_settings(settings_path), chosen)
+        settings_path.write_text('{"view":"invalid", "style":"edges"}')
+        self.assertEqual(load_settings(settings_path), {**DEFAULT_SETTINGS, 'style': 'edges'})
+        settings_path.write_text('{"view":[]}')
+        self.assertEqual(load_settings(settings_path), DEFAULT_SETTINGS)
 
     def test_download_window_and_newest_zip(self):
         for name, timestamp in [('fresh.STL', 9900), ('old.stl', 5000), ('new.zip', 9900), ('old.zip', 4000)]:
